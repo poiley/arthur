@@ -1,0 +1,228 @@
+import json
+import time
+from threading import Thread
+from datetime import datetime
+from weather import Weather, Unit
+import feedparser
+
+class Arthur():
+    def __init__(self):
+    	self.name, self.WOEID, self.todo, temp_name, temp_title = self.read_traits_from_file()
+    	self.owner = User(temp_name, temp_title)
+    	print(self.greet())
+
+    """
+    	A simple greeting that changes depending on the time of day.
+    """
+    def greet(self):
+    	now = datetime.now()
+    	if now.hour < 5 or now.hour >= 21:
+    		time_of_day = "night"
+    	elif now.hour < 12:
+    		time_of_day = "morning"
+    	elif now.hour < 17:
+    		time_of_day = "afternoon"
+    	else:
+    		time_of_day = "evening"
+
+    	if not self.is_first_greeting_of_day():
+    		return "Good {day}, {fullname}.".format(day=time_of_day, fullname=self.owner.get_full_name())
+    	
+    	return self.greet_first_of_day( "Good {}, {}.".format(time_of_day, self.owner.get_full_name()),
+    							   		self.get_suggestions_based_off_weather(),
+    							   		self.get_headlines("https://reddit.com/r/worldnews.rss", 3) )
+    		
+    """
+    	Boolean function to check if user has been greeted with first message of the day.
+    """
+    def is_first_greeting_of_day(self):
+    	data = ""
+    	with open("static.json") as f:
+    		data = json.loads(f.read())
+
+    	if data:
+    		d = datetime.strptime(data["Morning_Greeting"], "%m/%d/%y")
+
+    		if datetime.now().day != d.day:
+    			return True
+
+    	return False
+
+    """
+    	More intricate greeting, combining information from multiple other functions
+    	to compile a small daily report for user.
+    """
+    def greet_first_of_day(self, greeting, weather_suggestions, headlines):
+    	with open("static.json", "r+") as f:
+    		data = json.load(f)
+    		data["Morning_Greeting"] = datetime.now().strftime("%D")
+    		f.seek(0)
+    		json.dump(data, f)
+    		f.truncate()
+    		
+    	schedule = "Todays schedule calls for "
+    	if datetime.now().weekday() == 0:
+    		greeting += "It's Monday, which means a new Discover Weekly."
+    		schedule += "Discrete, CS 223, CS 260."
+    	elif datetime.now().weekday() == 2:
+    		schedule += "Discrete, CS 223, CS 260."
+    	elif datetime.now().weekday() == 1 or datetime.now().weekday() == 3:
+    		schedule += "a Physics and Linear Algebra lecture."
+    	elif datetime.now().weekday() == 4:
+    		s = greeting.split("Good")
+    		s[0] = "Happy Friday"
+    		greeting = "".join(s)
+
+    		greeting += "You have a refreshed Release Radar playlist ready for you Spotify."
+    		schedule += "Discrete, CS 223, CS 260."
+
+    	headlines_listed = ""
+    	for headline in headlines:
+    		headlines_listed += "\"" + headline + "\","
+
+    	return greeting + " " + schedule + " " + weather_suggestions[1:] + " Today's headlines include " + headlines_listed[:-1]
+
+
+    """
+		Input is WOEID (Yahoo Weather API equiv. of Zip Code)
+		It can be found/configured in `static.json`.
+    """
+    def get_weather(self):
+    	lookup = Weather(unit=Unit.FAHRENHEIT).lookup(self.WOEID)
+    	return "It is {} degrees and {} in {}, {}".format(lookup.condition.temp, lookup.condition.text, lookup.location.city, lookup.location.region)
+
+    """
+    	Return some semi-casual conversation and advice based on weather.
+    """
+    def get_suggestions_based_off_weather(self):
+    	lookup = Weather(unit=Unit.FAHRENHEIT).lookup(self.WOEID)
+
+    	suggestion_temp = ""
+    	if int(lookup.condition.temp) > 75:
+    		suggestion_temp = "It looks like it's hot out. May I suggest some shorts and a tee?"
+    	elif int(lookup.condition.temp) > 40:
+    		suggestion_temp = "Seems to be a pretty normal day out. How about some regular jeans or a hoodie?"
+    	elif int(lookup.condition.temp) > 32:
+    		suggestion_temp = "It's a cold one out there! Layer up. Grab a coffee on your way out to warm you up."
+    	else:
+    		suggestion_temp = "My records are indicating below freezing temperatures. Cancel your plans, Winter is coming."
+
+    	suggestion_weather = ""
+    	if suggestion_temp != "":
+    		if lookup.condition.code in range(26, 30):
+    			suggestion_weather = "Reports are coming in that it's going to a be a bit cloudy."
+    		elif lookup.condition.code in range(5,7) or lookup.condition.code in range(13, 16) or lookup.condition.code in range(41, 43) or lookup.condition.code == 46:
+    			suggestion_weather = "Log into my Wazzu baby because it's going to be snowing soon!"
+    		elif lookup.condition.code in range(8, 12) or lookup.condition.code in range(17, 18) or lookup.condition.code == 35 or lookup.condition.code in range(37, 40) or lookup.condition.code == 45 or lookup.condition.code == 47:
+    			suggestion_weather = "Surprise, surprise! It's raining."
+    		elif lookup.condition.code == 32 or lookup.condition.code == 36:
+    			suggestion_weather = "Good morning sunshine! The Earth says hello!"
+    	
+    	return suggestion_weather + " " + suggestion_temp
+
+    """
+    	Import RSS feed, return `number` headlines from top
+    	Ex.: self.get_headlines("https://reddit.com/r/worldnews.rss", 3)
+    """
+    def get_headlines(self, rss_url, number):
+    	headlines = []
+    	rss_data = feedparser.parse(rss_url)
+   
+    	for i in range(0, number):
+    		try:
+    			headlines.append(rss_data.entries[i]["title"])
+    		except KeyError:
+    			break
+    	
+    	return headlines
+
+    """
+    	File `static.json` must exist and contain such key values
+    """
+    def read_traits_from_file(self):
+    	with open("static.json") as f:
+    		data = json.loads(f.read())
+    		return data["Traits"]["Name"], data["Traits"]["WOEID"], data["Todo"], data["Traits"]["Owner"], data["Traits"]["Owner_Title"]
+
+    """
+    	Times are formatted as "HH:MM:SS DD/MM/YY"
+    	Ex.: self.set_alarm("04:10:00 09/18/18")
+    """
+    def set_alarm(self, alarm_time):
+    	d = datetime.strptime(alarm_time, "%H:%M:%S %m/%d/%y")
+    	alarm_epoch = float(time.mktime(d.timetuple()))
+    	current_epoch = float(time.mktime(datetime.now().timetuple()))
+    	
+    	a = Alarm(alarm_epoch - current_epoch)
+
+    """
+    	Add item to Todo list and write to disk
+    """
+    def add_todo(self, new):
+    	self.todo.append(new)
+    	self._update_todo_file()
+
+    """
+    	Remove item from Todo list and write to disk
+    """
+    def remove_todo(self, rm):
+    	if rm in self.todo:
+    		self.todo.remove(rm)
+    		self._update_todo_file()
+
+    """
+    	Clear the Todo list and write to disk
+    """
+    def clear_todo(self):
+    	self.todo = []
+    	self._update_todo_file()
+
+    """
+    	Private function for accessing and writing to the todo file when changes
+    	are made.
+    """
+    def _update_todo_file(self):
+    	with open("static.json", "r+") as f:
+    		data = json.load(f)
+    		data["Todo"] = self.todo
+    		f.seek(0)
+    		json.dump(data, f)
+    		f.truncate()
+
+    """
+    Return Todo list
+    """
+    def get_todo(self):
+    	return self.todo
+
+"""
+	Alarm clock class, child of threading.Thread
+"""
+class Alarm(Thread):
+	def __init__(self, alarm_duration):
+		time.sleep(alarm_duration)
+		print("ALARM GOING OFF")
+		
+"""
+	User class
+	Stores data about the user
+"""
+class User():
+	def __init__(self, name, title):
+		self.name = name
+		self.title = title
+
+	def get_name(self):
+		return self.name
+
+	def get_title(self):
+		return self.title
+
+	def get_full_name(self):
+		return self.title + " " + self.name 
+
+	def set_name(self, new):
+		self.name = new
+
+	def set_title(self, new):
+		self.title = new

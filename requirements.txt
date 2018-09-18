@@ -1,0 +1,10 @@
+certifi==2018.8.24
+chardet==3.0.4
+feedparser==5.2.1
+idna==2.7
+public==1.0.3
+requests==2.19.1
+runcmd==0.0.2
+urllib3==1.23
+vlc==0.1.0
+weather-api==1.0.4
