@@ -2,6 +2,9 @@ bin/
 lib/
 __pycache__/
 include/
+share/
 
+voice/responsemp3
 pip-selfcheck.json
 .Python
+.DS_Store

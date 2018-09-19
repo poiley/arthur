@@ -1,11 +1,14 @@
 import arthur
 import plugin
 import gq
+import speech
 
 from datetime import datetime
 
 def main():
 	a = arthur.Arthur()
+	
+	speech.say(a.greet())
 
 	gq_plugin = plugin.plugin("GQ OOTD", 
 							  gq.ootd, 
@@ -14,8 +17,7 @@ def main():
 	
 	a.add_plugin(gq_plugin)
 
-	print("GQ recommends {}".format(a.get_plugin("GQ OOTD").run()))
-
+	speech.say(a.get_plugin("GQ OOTD").run())
 
 if __name__ == "__main__":
     main()

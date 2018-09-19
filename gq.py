@@ -23,7 +23,7 @@ def ootd(month, year):
 	else:
 		ootd_data = _write_data(date_formatted, _get_gq_ootd_data(month, year))
 	
-	return ootd_data[str(now.day)]
+	return "GQ suggests " + ootd_data[str(now.day)]
 
 """
 	If data isn't already scraped from GQ, write the scraped data to 

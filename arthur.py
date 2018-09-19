@@ -5,13 +5,13 @@ from datetime import datetime
 from weather import Weather, Unit
 import feedparser
 import plugin
+import speech
 
 class Arthur():
     def __init__(self):
         self.name, self.WOEID, self.todo, temp_name, temp_title, temp_url = self.read_traits_from_file()
         self.owner = User(temp_name, temp_title, news_url=temp_url)
         self.plugins = []
-        print(self.greet())
 
     """
     	A simple greeting that changes depending on the time of day.
