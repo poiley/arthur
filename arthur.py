@@ -4,12 +4,14 @@ from threading import Thread
 from datetime import datetime
 from weather import Weather, Unit
 import feedparser
+import plugin
 
 class Arthur():
     def __init__(self):
-    	self.name, self.WOEID, self.todo, temp_name, temp_title = self.read_traits_from_file()
-    	self.owner = User(temp_name, temp_title)
-    	print(self.greet())
+        self.name, self.WOEID, self.todo, temp_name, temp_title = self.read_traits_from_file()
+        self.owner = User(temp_name, temp_title)
+        self.plugins = []
+        print(self.greet())
 
     """
     	A simple greeting that changes depending on the time of day.
@@ -190,10 +192,37 @@ class Arthur():
     		f.truncate()
 
     """
-    Return Todo list
+        Return Todo list
     """
     def get_todo(self):
     	return self.todo
+
+    """
+        Add plugin object to Arthur
+    """
+    def add_plugin(self, plugin):
+        self.plugins.append(plugin)
+
+    """
+        Return all plugins
+    """
+    def get_all_plugins(self):
+        return self.plugins
+
+    """
+        Returns plugin, given plugin title matches query parameter
+    """
+    def get_plugin(self, plugin_title):
+        for p in self.plugins:
+            if p.get_title() == plugin_title:
+                return p
+
+    """
+        Lists all plugins as text
+    """
+    def list_plugins(self):
+        for p in self.plugins:
+            print(p.get_title())
 
 """
 	Alarm clock class, child of threading.Thread
