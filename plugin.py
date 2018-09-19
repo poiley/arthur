@@ -7,7 +7,7 @@ class plugin:
 		self.params = params
 
 	def run(self):
-		self.function(*self.params)
+		return self.function(*self.params)
 
 	def get_title(self):
 		return self.title

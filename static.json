@@ -1,12 +1,1 @@
-{
-    "Morning_Greeting": "09/17/18",
-    "Todo": [
-        "Go grocery shopping"
-    ],
-    "Traits": {
-        "Name": "Arthur",
-        "Owner": "YOURNAME",
-        "Owner_Title": "Mister",
-        "WOEID": 12799510
-    }
-}
+{"Morning_Greeting": "09/18/18", "Todo": ["Go grocery shopping"], "Traits": {"Name": "Arthur", "Owner": "Poile", "Owner_Title": "Master", "WOEID": 12799510}}

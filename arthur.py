@@ -59,7 +59,7 @@ class Arthur():
     		f.seek(0)
     		json.dump(data, f)
     		f.truncate()
-    		
+
     	schedule = "Todays schedule calls for "
     	if datetime.now().weekday() == 0:
     		greeting += "It's Monday, which means a new Discover Weekly."
@@ -112,7 +112,7 @@ class Arthur():
     		if lookup.condition.code in range(26, 30):
     			suggestion_weather = "Reports are coming in that it's going to a be a bit cloudy."
     		elif lookup.condition.code in range(5,7) or lookup.condition.code in range(13, 16) or lookup.condition.code in range(41, 43) or lookup.condition.code == 46:
-    			suggestion_weather = "Log into my Wazzu baby because it's going to be snowing soon!"
+    			suggestion_weather = "Log into MyWazzu and check if classes are in session because it's going to be snowing soon!"
     		elif lookup.condition.code in range(8, 12) or lookup.condition.code in range(17, 18) or lookup.condition.code == 35 or lookup.condition.code in range(37, 40) or lookup.condition.code == 45 or lookup.condition.code == 47:
     			suggestion_weather = "Surprise, surprise! It's raining."
     		elif lookup.condition.code == 32 or lookup.condition.code == 36:
