@@ -8,8 +8,8 @@ import plugin
 
 class Arthur():
     def __init__(self):
-        self.name, self.WOEID, self.todo, temp_name, temp_title = self.read_traits_from_file()
-        self.owner = User(temp_name, temp_title)
+        self.name, self.WOEID, self.todo, temp_name, temp_title, temp_url = self.read_traits_from_file()
+        self.owner = User(temp_name, temp_title, news_url=temp_url)
         self.plugins = []
         print(self.greet())
 
@@ -32,7 +32,7 @@ class Arthur():
     	
     	return self.greet_first_of_day( "Good {}, {}.".format(time_of_day, self.owner.get_full_name()),
     							   		self.get_suggestions_based_off_weather(),
-    							   		self.get_headlines("https://reddit.com/r/worldnews.rss", 3) )
+    							   		self.get_headlines(self.owner.get_news_url(), 3) )
     		
     """
     	Boolean function to check if user has been greeted with first message of the day.
@@ -55,34 +55,37 @@ class Arthur():
     	to compile a small daily report for user.
     """
     def greet_first_of_day(self, greeting, weather_suggestions, headlines):
-    	with open("static.json", "r+") as f:
-    		data = json.load(f)
-    		data["Morning_Greeting"] = datetime.now().strftime("%D")
-    		f.seek(0)
-    		json.dump(data, f)
-    		f.truncate()
+        with open("static.json", "r+") as f:
+            data = json.load(f)
+            data["Morning_Greeting"] = datetime.now().strftime("%D")
+            f.seek(0)
+            json.dump(data, f)
+            f.truncate()
 
-    	schedule = "Todays schedule calls for "
-    	if datetime.now().weekday() == 0:
-    		greeting += "It's Monday, which means a new Discover Weekly."
-    		schedule += "Discrete, CS 223, CS 260."
-    	elif datetime.now().weekday() == 2:
-    		schedule += "Discrete, CS 223, CS 260."
-    	elif datetime.now().weekday() == 1 or datetime.now().weekday() == 3:
-    		schedule += "a Physics and Linear Algebra lecture."
-    	elif datetime.now().weekday() == 4:
-    		s = greeting.split("Good")
-    		s[0] = "Happy Friday"
-    		greeting = "".join(s)
+        schedule = "Todays schedule calls for "
+        if datetime.now().weekday() == 0:
+            greeting += "It's Monday, which means a new Discover Weekly."
+            schedule += "Discrete, CS 223, CS 260."
+        elif datetime.now().weekday() == 2:
+            schedule += "Discrete, CS 223, CS 260."
+        elif datetime.now().weekday() == 1 or datetime.now().weekday() == 3:
+            schedule += "a Physics and Linear Algebra lecture."
+        elif datetime.now().weekday() == 4:
+            s = greeting.split("Good")
+            s[0] = "Happy Friday"
+            greeting = "".join(s)
 
-    		greeting += "You have a refreshed Release Radar playlist ready for you Spotify."
-    		schedule += "Discrete, CS 223, CS 260."
+            greeting += "You have a refreshed Release Radar playlist ready for you Spotify."
+            schedule += "Discrete, CS 223, CS 260."
 
-    	headlines_listed = ""
-    	for headline in headlines:
-    		headlines_listed += "\"" + headline + "\","
+        headlines_listed = ""
+        for i in range(0, len(headlines)):
+            if i == (len(headlines) - 1):
+                headlines_listed += " and \"" + headlines[i] + "\".."
+            else:
+                headlines_listed += "\"" + headlines[i] + "\","
 
-    	return greeting + " " + schedule + " " + weather_suggestions[1:] + " Today's headlines include " + headlines_listed[:-1]
+        return greeting + " " + schedule + " " + weather_suggestions[1:] + " Today's headlines include " + headlines_listed[:-1]
 
 
     """
@@ -94,7 +97,7 @@ class Arthur():
     	return "It is {} degrees and {} in {}, {}".format(lookup.condition.temp, lookup.condition.text, lookup.location.city, lookup.location.region)
 
     """
-    	Return some semi-casual conversation and advice based on weather.
+        Return some semi-casual conversation and advice based on weather.
     """
     def get_suggestions_based_off_weather(self):
     	lookup = Weather(unit=Unit.FAHRENHEIT).lookup(self.WOEID)
@@ -144,7 +147,7 @@ class Arthur():
     def read_traits_from_file(self):
     	with open("static.json") as f:
     		data = json.loads(f.read())
-    		return data["Traits"]["Name"], data["Traits"]["WOEID"], data["Todo"], data["Traits"]["Owner"], data["Traits"]["Owner_Title"]
+    		return data["Traits"]["Name"], data["Traits"]["WOEID"], data["Todo"], data["Traits"]["Owner"], data["Traits"]["Owner_Title"], data["Traits"]["News_RSS_URL"]
 
     """
     	Times are formatted as "HH:MM:SS DD/MM/YY"
@@ -237,21 +240,31 @@ class Alarm(Thread):
 	Stores data about the user
 """
 class User():
-	def __init__(self, name, title):
-		self.name = name
-		self.title = title
+    def __init__(self, name, title, news_url=None):
+        self.name = name
+        self.title = title
+        if not news_url:
+            news_url = "http://feeds.bbci.co.uk/news/world/rss.xml"
+        self.news_url = news_url
+        
 
-	def get_name(self):
-		return self.name
+    def get_name(self):
+        return self.name
 
-	def get_title(self):
-		return self.title
+    def get_title(self):
+        return self.title
 
-	def get_full_name(self):
-		return self.title + " " + self.name 
+    def get_full_name(self):
+        return self.title + " " + self.name 
 
-	def set_name(self, new):
-		self.name = new
+    def get_news_url(self):
+        return self.news_url
 
-	def set_title(self, new):
-		self.title = new
+    def set_name(self, new):
+        self.name = new
+
+    def set_title(self, new):
+        self.title = new
+
+    def set_url(self, new):
+        self.news_url = new
