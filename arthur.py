@@ -258,9 +258,20 @@ class Arthur():
     	return self.todo
 
     """
-        Add plugin object to Arthur
+        Add plugin object to Arthur and update function file
     """
     def add_plugin(self, plugin):
+        with open("functions.json", "r+") as f:
+            data = json.load(f)
+            if plugin.get_query() not in data.keys():
+                query = re.sub(r"[^\w\s]", "", plugin.get_query().lower())
+                
+                data[query] = "get_plugin(\"{}\").run()".format(plugin.get_title())
+                
+                f.seek(0)
+                json.dump(data, f)
+                f.truncate()
+
         self.plugins.append(plugin)
 
     """
