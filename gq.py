@@ -4,6 +4,8 @@ from datetime import datetime
 
 MONTHS = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"]
 
+###INSTALL
+
 """
 	Return what GQ reccomends wearing today.
 	For reference, see https://www.gq.com/gallery/what-to-wear-september

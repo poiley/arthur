@@ -14,6 +14,10 @@ class Arthur():
         self.owner = User(temp_name, temp_title, news_url=temp_url)
         self.plugins = []
 
+    """
+        Receive user input, parse it and run as function.
+        Returns function return if function run was a success, "" if failure.
+    """
     def input(self, input_str):
         if " arthur" in input_str:
             input_str = input_str.replace(" arthur", "")
@@ -32,31 +36,49 @@ class Arthur():
                 if input_str == l[i]:
                     func = data[l[i]]
                     break
-                    
-        import pdb; pdb.set_trace()
-        print(func)
+
+        if func != {""}:
+            return eval("self."+func)
+
+        return ""
+
+
+    def standard_response(self, response):
+        return response
+
+    """
+        Repeat what was just said
+    """
+    def repeat(self):
+        return "__REPEAT__"
 
     """
     	A simple greeting that changes depending on the time of day.
     """
-    def greet(self):
-    	now = datetime.now()
-    	if now.hour < 5 or now.hour >= 21:
-    		time_of_day = "night"
-    	elif now.hour < 12:
-    		time_of_day = "morning"
-    	elif now.hour < 17:
-    		time_of_day = "afternoon"
-    	else:
-    		time_of_day = "evening"
+    def greet(self, full=False):
+        now = datetime.now()
+        if now.hour < 5 or now.hour >= 21:
+            time_of_day = "night"
+        elif now.hour < 12:
+            time_of_day = "morning"
+        elif now.hour < 17:
+            time_of_day = "afternoon"
+        else:
+            time_of_day = "evening"
 
-    	if not self.is_first_greeting_of_day():
-    		return "Good {day}, {fullname}.".format(day=time_of_day, fullname=self.owner.get_full_name())
-    	
-    	return self.greet_first_of_day("Good {}, {}.".format(time_of_day, self.owner.get_full_name()),
-    	            self.get_suggestions_based_off_weather(),
-    			 self.get_headlines(self.owner.get_news_url(), 3) )
-    		
+        if not full and not self.is_first_greeting_of_day():
+            return "Good {day}, {fullname}.".format(day=time_of_day, fullname=self.owner.get_full_name())
+        else:
+            return self.greet_first_of_day("Good {}, {}.".format(time_of_day, self.owner.get_full_name()),
+                    self.get_suggestions_based_off_weather(),
+                    self.get_headlines(3) )
+    
+    """
+        Wrapper function for speech input case. Forces full greeting.
+    """
+    def greet_full(self):
+        return self.greet(full=True)
+
     """
     	Boolean function to check if user has been greeted with first message of the day.
     """
@@ -101,14 +123,7 @@ class Arthur():
             greeting += "You have a refreshed Release Radar playlist ready for you Spotify."
             schedule += "Discrete, CS 223, CS 260."
 
-        headlines_listed = ""
-        for i in range(0, len(headlines)):
-            if i == (len(headlines) - 1):
-                headlines_listed += " and \"" + headlines[i] + "\".."
-            else:
-                headlines_listed += "\"" + headlines[i] + "\","
-
-        return greeting + " " + schedule + " " + weather_suggestions[1:] + " Today's headlines include " + headlines_listed[:-1]
+        return greeting + " " + schedule + " " + weather_suggestions[1:] + " " + self.get_news_formatted()
 
 
     """
@@ -148,13 +163,26 @@ class Arthur():
     	
     	return suggestion_weather + " " + suggestion_temp
 
+
+    def get_news_formatted(self):
+        headlines = self.get_headlines(3)
+        headlines_listed = ""
+        for i in range(0, len(headlines)):
+            if i == (len(headlines) - 1):
+                headlines_listed += " and \"" + headlines[i] + "\".."
+            else:
+                headlines_listed += "\"" + headlines[i] + "\","
+
+        return "Today's headlines include " + headlines_listed[:-1] + "."
+    
     """
     	Import RSS feed, return `number` headlines from top
     	Ex.: self.get_headlines("https://reddit.com/r/worldnews.rss", 3)
     """
-    def get_headlines(self, rss_url, number):
+    def get_headlines(self, number):
     	headlines = []
-    	rss_data = feedparser.parse(rss_url)
+    	rss_data = feedparser.parse(self.owner.news_url)
+
    
     	for i in range(0, number):
     		try:
@@ -189,23 +217,27 @@ class Arthur():
     	Add item to Todo list and write to disk
     """
     def add_todo(self, new):
-    	self.todo.append(new)
-    	self._update_todo_file()
+        self.todo.append(new)
+        self._update_todo_file()
+        return "Added to to-do list." 
 
     """
     	Remove item from Todo list and write to disk
     """
     def remove_todo(self, rm):
-    	if rm in self.todo:
-    		self.todo.remove(rm)
-    		self._update_todo_file()
+        if rm in self.todo:
+            self.todo.remove(rm)
+            self._update_todo_file()
+            return "Removed from to-do list." 
+        return "Item not in list."
 
     """
     	Clear the Todo list and write to disk
     """
     def clear_todo(self):
-    	self.todo = []
-    	self._update_todo_file()
+        self.todo = []
+        self._update_todo_file()
+        return "To-do list cleared."
 
     """
     	Private function for accessing and writing to the todo file when changes

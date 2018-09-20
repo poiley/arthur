@@ -8,8 +8,13 @@ from datetime import datetime
 def main():
 	a = arthur.Arthur()
 
-	a.input("good morning, arthur")	
-	# speech.say(a.greet())
+	_in = ""
+	while _in != "quit":
+		_in = a.input(input("'quit' to quit.\n~> "))
+		if _in:
+			speech.say(_in)
+		else:
+			speech.say("__INVALID__")
 
 	# gq_plugin = plugin.plugin("GQ OOTD", 
 	# 						  gq.ootd, 

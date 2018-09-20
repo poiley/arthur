@@ -1,15 +1,26 @@
-import vlc, time
+import vlc, time, json
 from os.path import join, dirname
 from watson_developer_cloud import TextToSpeechV1
 
-USERNAME=""
-PASSWORD=""
-VOICE = "en-US_AllisonVoice" # "en-GB_KateVoice", "en-US_MichaelVoice", "en-US_AllisonVoice"
+with open("keys.json") as f:
+	data = json.loads(f.read())
+
+USERNAME=data['username']
+PASSWORD=data['password']
+VOICE = data['voice'] # "en-GB_KateVoice", "en-US_MichaelVoice", "en-US_AllisonVoice"
 
 service = TextToSpeechV1(username=USERNAME, password=PASSWORD)
 
 def say(message):
 	print(message)
+	
+	if message == "__REPEAT__":
+		play("./voice/response.mp3")
+		return
+	elif message == "__INVALID__":
+		play("./voice/invalid_input.mp3")
+		return
+
 	with open(join(dirname(__file__), "voice/response.mp3"), "wb") as f:
 		response = service.synthesize(message, accept="audio/mp3", voice=VOICE).get_result()
 		f.write(response.content)
