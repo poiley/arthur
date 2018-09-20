@@ -2,9 +2,8 @@ import requests, json
 from lxml import html
 from datetime import datetime
 
+DATA_PATH = "plugins/ootd.json"
 MONTHS = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"]
-
-###INSTALL
 
 """
 	Return what GQ reccomends wearing today.
@@ -17,7 +16,7 @@ def ootd(month, year):
 	if month < now.month or year < now.year:
 		return ""
 
-	with open("ootd.json", "r") as f:
+	with open(DATA_PATH, "r") as f:
 		file_data = json.load(f)
 	
 	if date_formatted in file_data.keys():
@@ -36,11 +35,11 @@ def _write_data(date_formatted, ootd_data):
 	for i in range(0, len(ootd_data)):
 		formatted_data[str(i+1)] = ootd_data[i]
 
-	with open("ootd.json") as f:
+	with open(DATA_PATH) as f:
 		data = json.load(f)
 		data[date_formatted] = formatted_data
 
-	with open("ootd.json", "w") as f:
+	with open(DATA_PATH, "w") as f:
 		json.dump(data, f)
 
 	return data[date_formatted]

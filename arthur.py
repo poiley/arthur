@@ -19,12 +19,12 @@ class Arthur():
         Returns function return if function run was a success, "" if failure.
     """
     def input(self, input_str):
+        input_str = re.sub(r"[^\w\s]", "", input_str.lower())
+        
         if " arthur" in input_str:
             input_str = input_str.replace(" arthur", "")
         elif  "arthur " in input_str:
             input_str = input_str.replace("arthur ", "")
-        
-        input_str = re.sub(r"[^\w\s]", "", input_str)
 
         with open("functions.json") as f:
             data = json.loads(f.read())

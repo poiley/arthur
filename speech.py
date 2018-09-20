@@ -7,7 +7,7 @@ with open("keys.json") as f:
 
 USERNAME=data['username']
 PASSWORD=data['password']
-VOICE = data['voice'] # "en-GB_KateVoice", "en-US_MichaelVoice", "en-US_AllisonVoice"
+VOICE = data['voice']
 
 service = TextToSpeechV1(username=USERNAME, password=PASSWORD)
 
