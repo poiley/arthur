@@ -6,12 +6,35 @@ from weather import Weather, Unit
 import feedparser
 import plugin
 import speech
+import re
 
 class Arthur():
     def __init__(self):
         self.name, self.WOEID, self.todo, temp_name, temp_title, temp_url = self.read_traits_from_file()
         self.owner = User(temp_name, temp_title, news_url=temp_url)
         self.plugins = []
+
+    def input(self, input_str):
+        if " arthur" in input_str:
+            input_str = input_str.replace(" arthur", "")
+        elif  "arthur " in input_str:
+            input_str = input_str.replace("arthur ", "")
+        
+        input_str = re.sub(r"[^\w\s]", "", input_str)
+
+        with open("functions.json") as f:
+            data = json.loads(f.read())
+
+        func = {""}
+        if input_str in data.keys():
+            l = list(data.keys())
+            for i in range(0, len(l)):
+                if input_str == l[i]:
+                    func = data[l[i]]
+                    break
+                    
+        import pdb; pdb.set_trace()
+        print(func)
 
     """
     	A simple greeting that changes depending on the time of day.
@@ -30,9 +53,9 @@ class Arthur():
     	if not self.is_first_greeting_of_day():
     		return "Good {day}, {fullname}.".format(day=time_of_day, fullname=self.owner.get_full_name())
     	
-    	return self.greet_first_of_day( "Good {}, {}.".format(time_of_day, self.owner.get_full_name()),
-    							   		self.get_suggestions_based_off_weather(),
-    							   		self.get_headlines(self.owner.get_news_url(), 3) )
+    	return self.greet_first_of_day("Good {}, {}.".format(time_of_day, self.owner.get_full_name()),
+    	            self.get_suggestions_based_off_weather(),
+    			 self.get_headlines(self.owner.get_news_url(), 3) )
     		
     """
     	Boolean function to check if user has been greeted with first message of the day.
@@ -154,11 +177,13 @@ class Arthur():
     	Ex.: self.set_alarm("04:10:00 09/18/18")
     """
     def set_alarm(self, alarm_time):
-    	d = datetime.strptime(alarm_time, "%H:%M:%S %m/%d/%y")
-    	alarm_epoch = float(time.mktime(d.timetuple()))
-    	current_epoch = float(time.mktime(datetime.now().timetuple()))
-    	
-    	a = Alarm(alarm_epoch - current_epoch)
+        d = datetime.strptime(alarm_time, "%H:%M:%S %m/%d/%y")
+        alarm_epoch = float(time.mktime(d.timetuple()))
+        current_epoch = float(time.mktime(datetime.now().timetuple()))
+        
+        a = Alarm(alarm_epoch - current_epoch)
+
+        speech.play("voice/alarm.mp3")
 
     """
     	Add item to Todo list and write to disk
@@ -233,7 +258,6 @@ class Arthur():
 class Alarm(Thread):
 	def __init__(self, alarm_duration):
 		time.sleep(alarm_duration)
-		print("ALARM GOING OFF")
 		
 """
 	User class

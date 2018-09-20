@@ -1,0 +1,35 @@
+{
+	"good morning": "greet",
+	"good afternoon": "greet",
+	"good evening": "greet",
+	"good night": "greet",
+	"whats up": "greet",
+	"hello": "greet",
+	"hey": "greet",
+	"hi": "greet",
+
+	"daily briefing": "greet",
+	"what does today look like?": "greet",
+
+	"how are you?": "",
+	"how do you do?": "",
+
+	"thank you": "thanks",
+	"much appreciated": "thanks",
+
+	"add to to-do list": "add to-do",
+	"remove from to-do list": "remove to-do",
+	"clear to-do list": "clear to-do",
+
+	"set alarm": "set_alarm",
+	"cancel alarm": "cancel_alarm",
+	"stop alarm": "stop_alarm",
+
+	"whats in the news?": "headlines",
+	"news": "headlines",
+	"headlines": "headlines",
+
+	"weather": "weather",
+	"what's the weather like?": "weather",
+	"forecast": "weather"
+}
