@@ -1,15 +1,19 @@
 import vlc, time, json
 from os.path import join, dirname
 from watson_developer_cloud import TextToSpeechV1
+import speech_recognition as sr
 
 with open("keys.json") as f:
 	data = json.loads(f.read())
 
-USERNAME=data['username']
-PASSWORD=data['password']
+stt_USERNAME=data["stt_username"]
+stt_PASSWORD=data["stt_password"]
+
+tts_USERNAME=data["tts_username"]
+tts_PASSWORD=data["tts_password"]
 VOICE = data['voice']
 
-service = TextToSpeechV1(username=USERNAME, password=PASSWORD)
+service = TextToSpeechV1(username=tts_USERNAME, password=tts_PASSWORD)
 
 def say(message):
 	print(message)
@@ -33,4 +37,9 @@ def play(file_path):
 	
 	while p.get_state() != vlc.State.Ended:
 		time.sleep(1)
-	
+
+def listen():
+	r = sr.Recognizer()
+	with sr.AudioFile("input/input.wav") as src:
+		audio = r.record(src)
+	return r.recognize_ibm(audio, stt_USERNAME, stt_PASSWORD).strip().lower()

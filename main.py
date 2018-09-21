@@ -18,8 +18,10 @@ def main():
 	
 	a.add_plugin(gq_plugin)
 
-	_in = input("'quit' to quit.\n~> ")
+	# _in = input("'quit' to quit.\n~> ")
+	_in = speech.listen()
 	while _in != "quit":
+		print("Arthur heard you say '{}'".format(_in))
 		_in = a.input(_in)
 	
 		if _in:
