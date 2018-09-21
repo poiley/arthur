@@ -1,4 +1,4 @@
-import vlc, time, json
+import vlc, time, json, re
 from os.path import join, dirname
 from watson_developer_cloud import TextToSpeechV1
 import speech_recognition as sr
@@ -40,6 +40,10 @@ def play(file_path):
 
 def listen():
 	r = sr.Recognizer()
-	with sr.AudioFile("input/input.wav") as src:
-		audio = r.record(src)
-	return r.recognize_ibm(audio, stt_USERNAME, stt_PASSWORD).strip().lower()
+
+	mic = sr.Microphone()
+	with mic as src:
+		print("Say something! ")
+		audio = r.listen(src)
+
+	return re.sub(r"[^\w\s]", "", r.recognize_ibm(audio, stt_USERNAME, stt_PASSWORD).strip().lower())

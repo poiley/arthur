@@ -18,7 +18,8 @@ def main():
 	
 	a.add_plugin(gq_plugin)
 
-	# _in = input("'quit' to quit.\n~> ")
+	speech.say("Hello, there I'm {}".format(a.name))
+
 	_in = speech.listen()
 	while _in != "quit":
 		print("Arthur heard you say '{}'".format(_in))
@@ -29,7 +30,7 @@ def main():
 		else:
 			speech.say("__INVALID__")
 
-		_in = input("'quit' to quit.\n~> ")
+		_in = speech.listen()
 
 
 if __name__ == "__main__":

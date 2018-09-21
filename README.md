@@ -6,10 +6,22 @@ Voice powered by IBM watson
 
 ## Setup
 
+If on macOS
+
+```
+$ brew install portaudio
+```
+
+or on Debian Linux
+
+```
+$ sudo apt-get install python-pyaudio python3-pyaudio
+```
+
 Install pips
 
 ```
-pip install -r requirements.txt
+$ pip install -r requirements.txt
 
 ```
 
