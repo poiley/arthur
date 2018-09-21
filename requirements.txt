@@ -3,6 +3,7 @@ chardet==3.0.4
 feedparser==5.2.1
 idna==2.7
 lxml==4.2.5
+PyAudio==0.2.11
 python-dateutil==2.7.3
 python-vlc==3.0.102
 requests==2.19.1
