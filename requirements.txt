@@ -18,7 +18,7 @@ public==1.0.3
 PyAudio==0.2.11
 python-dateutil==2.7.3
 python-vlc==3.0.102
-PyYAML==3.13
+PyYAML==5.4
 requests==2.19.1
 runcmd==0.0.2
 six==1.11.0
