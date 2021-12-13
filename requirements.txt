@@ -12,7 +12,7 @@ gTTS-token==1.1.1
 idna==2.7
 itsdangerous==0.24
 Jinja2==2.10
-lxml==4.2.5
+lxml==4.6.5
 MarkupSafe==1.0
 public==1.0.3
 PyAudio==0.2.11
